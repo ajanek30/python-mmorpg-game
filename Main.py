@@ -9,6 +9,23 @@ class Entity(ABC):
         self.level = level
         self.hp = hp
         self.maxHp = maxHp
+
+    def __str__(self):
+        return f"[{self.__class__.__name__} Lvl {self.level}] {self.name} | HP: {self.hp}/{self.maxHp}"
+    def __repr__(self):
+        return f"Entity(name='{self.name}', level={self.level}, hp={self.hp})"
+#PRZECIAZENIE OPERATOROW
+    def __lt__(self, other):
+        if not isinstance(other, Entity):
+            return NotImplemented
+        return self.level < other.level
+    def __eq__(self, other):
+        if not isinstance(other, Entity):
+            return False
+        return self.level == other.level and self.name == other.name
+    def __bool__(self):
+        return self.isAlive
+
     @abstractmethod
     def makeMove(self):
         pass
@@ -48,7 +65,6 @@ class EntityFactory:
             return Enemy(name,level,hp,maxHp)
 #mixiny,pomocniczne
 
-#hp powinno zalezc od level - todo!
 
 class HealingMixin:
     def receiveHealing(self,amount):
@@ -95,7 +111,17 @@ class Mage(Hero):
 #wrog
 class Enemy(Entity,InventoryMixin,HealingMixin):
     def __init__(self,name,level,hp,maxHp):
-        super().__init__(self,name,level,hp)
+        super().__init__(name,level,hp,maxHp)
+
+    @classmethod
+    def createBoss(cls, name, level):
+        maxHp = level * 50
+        hp = maxHp
+        print(f"Generowanie elitarnej jednostki typu {cls.__name__}...")
+        return cls(f"Elite {name}", level, hp, maxHp)
+
+    def __str__(self):
+        return super().__str__()
     def makeMove(self):
         pass
 #wrogowie dziedziczni
@@ -121,5 +147,8 @@ class Dragon(Enemy):
         print(self.name," dragon is moving")
 
 
-enemy = EntityFactory.createEnemy("worm","fiutek",15)
+enemy = EntityFactory.createEnemy("worm","fiutek",5)
+#zwykły = Goblin("Gienek", 1, 20, 20)
+boss = Goblin.createBoss("boss",7)
+print(boss.hp)
 print(enemy.maxHp)
