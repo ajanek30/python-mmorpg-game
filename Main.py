@@ -21,7 +21,7 @@ class HealingMixin:
         healed = self.hp - oldHp
 class InventoryMixin:
     def __init__(self,):
-        inventory = []
+        self.inventory = []
     def addItem(self,item):
         self.inventory.append(item)
 #bohater
@@ -30,7 +30,17 @@ class Hero(Entity,HealingMixin,InventoryMixin):
         Entity.__init__(self,name,level,hp,maxHp)
     def makeMoving(self):
         pass
-class Warrior(Hero,InventoryMixin,HealingMixin):
+class Warrior(Hero):
+    def __init__(self,name,level,hp,maxHp):
+        Hero.__init__(self,name,level,hp,maxHp)
+    def makeMove(self):
+        print(self.name, " warrior is moving")
+class Knight(Hero):
+    def __init__(self,name,level,hp,maxHp):
+        Hero.__init__(self,name,level,hp,maxHp)
+    def makeMove(self):
+        print(self.name, " warrior is moving")
+class Paladin(Hero):
     def __init__(self,name,level,hp,maxHp):
         Hero.__init__(self,name,level,hp,maxHp)
     def makeMove(self):
@@ -41,11 +51,25 @@ class Enemy(Entity,InventoryMixin,HealingMixin):
         Entity.__init__(self,name,level,hp,maxHp)
     def makeMove(self):
         pass
-class Goblin(Enemy,HealingMixin):
+class Goblin(Enemy):
     def __init__(self,name,level,hp,maxHp):
         Enemy.__init__(self,name,level,hp,maxHp)
     def makeMove(self):
         print(self.name, " goblin is moving")
-
-obiekt = Goblin("Goblin",5,50,50)
-obiekt.makeMove()
+class Witch(Enemy):
+    def __init__(self,name,level,hp,maxHp):
+        Enemy.__init__(self,name,level,hp,maxHp)
+    def makeMove(self):
+        print(self.name, " witch is moving")
+class Worm(Enemy):
+    def __init__(self,name,level,hp,maxHp):
+        Enemy.__init__(self,name,level,hp,maxHp)
+    def makeMove(self):
+        print(self.name," worm is moving")
+class Dragon(Enemy):
+    def __init__(self,name,level,hp,maxHp):
+        Enemy.__init__(self,name,level,hp,maxHp)
+    def makeMove(self):
+        print(self.name," dragon is moving")
+#obiekt = Goblin("Adam",5,50,50)
+#obiekt.makeMove()

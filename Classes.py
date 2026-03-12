@@ -46,6 +46,3 @@ class Goblin(Enemy,HealingMixin):
         Enemy.__init__(self,name,level,hp,maxHp)
     def makeMove(self):
         print(self.name, " goblin is moving")
-
-obiekt = Goblin("Goblin",5,50,50)
-obiekt.makeMove()
