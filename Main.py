@@ -1,15 +1,15 @@
-import random
 import numpy as np
 from abc import ABC, abstractmethod
 
-#klasa abstrakcyjna
+#KLASA ABSTRAKCYJNA
+
 class Entity(ABC):
     def __init__(self, name,level,hp,maxHp):
         self.name = name
         self.level = level
         self.hp = hp
         self.maxHp = maxHp
-
+#METODY SPECJALNE
     def __str__(self):
         return f"[{self.__class__.__name__} Lvl {self.level}] {self.name} | HP: {self.hp}/{self.maxHp}"
     def __repr__(self):
@@ -25,13 +25,16 @@ class Entity(ABC):
         return self.level == other.level and self.name == other.name
     def __bool__(self):
         return self.isAlive
-
+#ABSTRAKCYJNE METODY
     @abstractmethod
     def makeMove(self):
         pass
+#MODYFIKATORY DOSTEPU
     @property
     def isAlive(self):
         return self.hp > 0
+
+#FABRYKI
 
 class EntityFactory:
     @staticmethod
@@ -47,6 +50,9 @@ class EntityFactory:
             return heros[heroType](name,level)
         else:
             raise ValueError(f"Nieznany typ bohatera: {heroType}")
+
+        #METODY STATYCZNE
+
     @staticmethod
     def createEnemy(enemyType,name,level):
         enemyType = enemyType.lower()
@@ -63,8 +69,8 @@ class EntityFactory:
             return enemies[enemyType](name,level,hp,maxHp)
         else:
             return Enemy(name,level,hp,maxHp)
-#mixiny,pomocniczne
 
+#MIXINY
 
 class HealingMixin:
     def receiveHealing(self,amount):
@@ -83,14 +89,18 @@ class InventoryMixin:
         print(item, " removed from inventory")
 
 #bohater
+
 class Hero(Entity,HealingMixin,InventoryMixin):
     def __init__(self,name,level,hp,maxHp):
         super().__init__(name,level,hp,maxHp)
         self.initInventory()
+    def __str__(self):
+        return super().__str__()
     def makeMoving(self):
         pass
 
 #bohaterowie dziedziczni
+
 class Warrior(Hero):
     def __init__(self,name,level):
         super().__init__(name,level,150,150)
@@ -108,23 +118,26 @@ class Mage(Hero):
         self.mana = 150
     def makeMove(self):
         print(self.name, " mage is moving")
+
 #wrog
+
 class Enemy(Entity,InventoryMixin,HealingMixin):
     def __init__(self,name,level,hp,maxHp):
         super().__init__(name,level,hp,maxHp)
-
+    #METODA KLASOWA
     @classmethod
     def createBoss(cls, name, level):
         maxHp = level * 50
         hp = maxHp
         print(f"Generowanie elitarnej jednostki typu {cls.__name__}...")
         return cls(f"Elite {name}", level, hp, maxHp)
-
     def __str__(self):
         return super().__str__()
     def makeMove(self):
         pass
+
 #wrogowie dziedziczni
+
 class Goblin(Enemy):
     def __init__(self,name,level,hp,maxHp):
         super().__init__(name,level,hp,maxHp)
@@ -146,9 +159,13 @@ class Dragon(Enemy):
     def makeMove(self):
         print(self.name," dragon is moving")
 
+############################################################################
+
+#POLIMORFIZM
 
 enemy = EntityFactory.createEnemy("worm","fiutek",5)
 #zwykły = Goblin("Gienek", 1, 20, 20)
 boss = Goblin.createBoss("boss",7)
 print(boss.hp)
+print(enemy)
 print(enemy.maxHp)
