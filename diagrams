@@ -1,0 +1,45 @@
+@startuml
+
+!theme plain
+top to bottom direction
+skinparam linetype ortho
+
+class node9 as "Main.Dragon"
+class node15 as "Main.Enemy"
+class node16 as "Main.Entity"
+class node8 as "Main.EntityFactory"
+class node6 as "Main.Goblin"
+class node5 as "Main.HealingMixin"
+class node14 as "Main.Hero"
+class node4 as "Main.InventoryMixin"
+class node0 as "Main.Knight"
+class node12 as "Main.Mage"
+class node10 as "Main.Warrior"
+class node1 as "Main.Witch"
+class node13 as "Main.Worm"
+class node7 as "abc.ABC"
+class node2 as "abc.ABCMeta"
+class object
+class node3 as "typing.Hashable"
+
+node9   ^-[#595959,plain]-  node15 
+node15  ^-[#595959,plain]-  node16 
+node15  ^-[#595959,plain]-  node5  
+node15  ^-[#595959,plain]-  node4  
+node16  ^-[#595959,plain]-  node7  
+node8   ^-[#595959,plain]-  object 
+node6   ^-[#595959,plain]-  node15 
+node5   ^-[#595959,plain]-  object 
+node14  ^-[#595959,plain]-  node16 
+node14  ^-[#595959,plain]-  node5  
+node14  ^-[#595959,plain]-  node4  
+node4   ^-[#595959,plain]-  object 
+node0   ^-[#595959,plain]-  node14 
+node12  ^-[#595959,plain]-  node14 
+node10  ^-[#595959,plain]-  node14 
+node1   ^-[#595959,plain]-  node15 
+node13  ^-[#595959,plain]-  node15 
+node7   <-[#595959,dashed]- "isinstanceof" node2  
+node7   ^-[#595959,plain]-  object 
+object  ^-[#595959,dashed]-  node3  
+@enduml
