@@ -1,4 +1,5 @@
 import time
+import os
 
 import numpy as np
 from abc import ABC, abstractmethod
@@ -86,6 +87,15 @@ class Entity(ABC):
     def __bool__(self):
         return self.isAlive
 
+class Item(ABC):
+    def __init__(self,name,description):
+        self.name = name
+        self.description = description
+    @abstractmethod
+    def use(self, target):
+        pass
+    def __str__(self):
+        return f"{self.name} ({self.description})"
 #FABRYKI
 
 class EntityFactory:
@@ -150,12 +160,40 @@ class InventoryMixin:
         else:
             for item in self.inventory:
                 print(f"🎒 {self.name}'s inventory: {item}")
+#itemy
+
+class Weapon(Item):
+    def __init__(self,name,description,damageBonus):
+        super().__init__(name,description)
+        self.damageBonus = damageBonus
+    def use(self,target):
+        print(f"🗡️ {target.name} chwyta za broń: {self.name}! (+{self.damageBonus} do ataku)")
+        target.equipWeapon(self)
+class Potion(Item):
+    def __init__(self,name,description,healAmount):
+        super().__init__(name,description)
+        self.healAmount = healAmount
+    def use(self,target):
+        print(f"🧪 {target.name} wypija {self.name}...")
+        target.receiveHealing(self.healAmount)
+
 #bohater
 
 class Hero(Entity,HealingMixin,InventoryMixin):
-    def __init__(self,name,level,hp,maxHp,missChance):
+    def __init__(self,name,level,hp,maxHp,missChance,equippedWeapon=None):
         super().__init__(name,level,hp,maxHp,missChance)
         self.initInventory()
+        self.equippedWeapon = equippedWeapon
+
+    def equipWeapon(self, newWeapon):
+        if self.equippedWeapon is not None:
+            print(f"🔄 {self.name} chowa {self.equippedWeapon.name} do plecaka.")
+            self.addItem(self.equippedWeapon)
+        self.equippedWeapon = newWeapon
+        print(f"🗡️ {self.name} chwyta za broń: {newWeapon.name}! (+{newWeapon.damageBonus} do ataku)")
+        if newWeapon in self.inventory:
+            self.inventory.remove(newWeapon)
+
     def __str__(self):
         return super().__str__()
     def makeMove(self):
@@ -285,39 +323,68 @@ class Dragon(Enemy):
 
 #POLIMORFIZM
 
-enemy = EntityFactory.createEnemy("worm","fiutek",8)
-hero = EntityFactory.createHero("warrior","warrior",1)
+enemy = EntityFactory.createEnemy("worm", "fiutek", 8)
+player = EntityFactory.createHero("warrior", "warrior", 1)
+miecz = Weapon("Stalowy Miecz", "Zwykły miecz z pobliskiej kuźni", damageBonus=10)
+mikstura = Potion("Mała Mikstura Życia", "Leczy 30 HP", healAmount=30)
 
-def gameHandle(entity1,entity2):
-    entity1.addItem("mieczyk")
-    entity1.dropItem("mie6czyk")
+def gameHandle(player,enemy):
 
-    entity2.addItem("kosa")
-    entity2.receiveHealing(10)
-    Goblin.createBoss(entity1.name,entity1.level)
+    player.addItem(miecz)
+    player.addItem(mikstura)
 
-    fightHandle(entity1,entity2)
+    enemy.receiveHealing(10)
+    Goblin.createBoss(player.name,player.level)
 
-def fightHandle(entity1,entity2):
+    fightHandle(player,enemy)
 
-    while entity1 and entity2:
-        print("====================================================================================")
-        print(f"🗡️🗡️🗡️🗡️🗡️🗡️🗡️🗡️🗡️🗡️{entity1}🗡️🗡️🗡️🗡️🗡️🗡️🗡️🗡️🗡️🗡️")
-        print("====================================================================================")
-        entity1.makeMove()
-        entity1.attack(entity2)
+def fightHandle(player,enemy):
 
-        if not entity2:
+#jakos oni musza miec iles potek itd czy moga sie leczyc w nieskonczonosc???
+    while player and enemy:
+        print(f"\n[Twoja tura] {player.name} HP: {player.hp:.1f}/{player.maxHp} | {enemy.name} HP: {enemy.hp:.1f}/{enemy.maxHp}")
+        print("Co chcesz zrobić?\n")
+        print(f"[1] Atak ⚔️ | twoja broń : {miecz.__str__()}")#todo
+        print("[2] Wybierz broń 🎒")
+        print("[3] Ulecz się♂️")
+        print("[4] Ucieczka🏃‍♂️")
+
+        mainChoice = input("Wybierz akcję (1/2/3/4): ")
+        print("-" * 20)
+
+        if mainChoice == "1":
+            player.makeMove()
+            player.attack(enemy)
+
+        elif mainChoice == "2":
+            miecz.use(player)
+            player.addItem("mieczyk")#todo
+            #dodac dodawania do inventory
+        elif mainChoice == "3":
+            mikstura.use(player)
+            print(f" 🏃‍♂️ {player.name} Uleczył się!")
             break
-        print("====================================================================================")
-        print(f"🗡️🗡️🗡️🗡️🗡️🗡️🗡️🗡️🗡️🗡️{entity2}🗡️🗡️🗡️🗡️🗡️🗡️🗡️🗡️🗡️🗡️")
-        print("====================================================================================")
-        time.sleep(3)
-        entity2.makeMove()
-        entity2.attack(entity1)
-        time.sleep(3)
-        if not entity1:
+        elif mainChoice == "4":
+            print(f" 🏃‍♂️ {player.name} ucieka w popłochu z pola walki!")
             break
+        else:
+            print("nieznana opcja")
+        if not enemy:
+            print(f"{enemy} zostal pokonany")
+            break;
+
+        time.sleep(1)
+
+        #zmiana tury
 
 
-gameHandle(enemy,hero)
+        if not player:
+            print(f"{player} zostal pokonany")
+            break
+        enemy.makeMove()
+        enemy.attack(player)
+
+        time.sleep(1)
+
+
+gameHandle(player,enemy)
