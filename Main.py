@@ -9,6 +9,13 @@ class Entity(ABC):
         self.level = level
         self.hp = hp
         self.maxHp = maxHp
+    def attack(self,target):
+        damage = self.level * 1.5
+        target.takeDamage(damage)
+    def takeDamage(self,amount):
+        self.hp -= amount
+
+
 #METODY SPECJALNE
     def __str__(self):
         return f"[{self.__class__.__name__} Lvl {self.level}] {self.name} | HP: {self.hp}/{self.maxHp}"
@@ -33,6 +40,7 @@ class Entity(ABC):
     @property
     def isAlive(self):
         return self.hp > 0
+
 
 #FABRYKI
 
@@ -78,6 +86,7 @@ class HealingMixin:
         self.hp = min(oldHp + amount, self.maxHp) # zeby nie przekroczyc maxa
         healed = self.hp - oldHp
         print("Healed",healed)
+
 class InventoryMixin:
     def initInventory(self):
         self.inventory = []
@@ -87,6 +96,7 @@ class InventoryMixin:
     def dropItem(self,item):
         self.inventory.remove(item)
         print(item, " removed from inventory")
+#class MagicMixin:
 
 #bohater
 
@@ -107,18 +117,40 @@ class Warrior(Hero):
         self.stamina = 100
     def makeMove(self):
         print(self.name, " warrior is moving")
+    def attack(self,target):
+        if self.stamina >= 20:
+            self.stamina -= 20
+            damage = self.level * 1.5 + self.stamina * 1.3
+            target.takeDamage(damage)
+        else:
+            super().attack(target)
 class Knight(Hero):
     def __init__(self,name,level):
         super().__init__(name,level,120,120)
+    def generateKnightBonus(self):
+        return np.random.randint(10,30)
     def makeMove(self):
         print(self.name, " warrior is moving")
+    def attack(self,target):
+        bonusDamage = self.generateKnightBonus()
+        if(bonusDamage > 15):
+            damage = self.level * 1.5 + bonusDamage
+            target.takeDamage(damage)
+        else:
+            super().attack(target)
 class Mage(Hero):
     def __init__(self,name,level):
         super().__init__(name,level,90,90)
         self.mana = 150
     def makeMove(self):
         print(self.name, " mage is moving")
-
+    def attack(self,target):
+        if self.mana >= 35:
+            self.mana -= 35
+            damage = self.level * 1.5 + self.mana * 1.5
+            target.takeDamage(damage)
+        else:
+            super().attack(target)
 #wrog
 
 class Enemy(Entity,InventoryMixin,HealingMixin):
@@ -143,29 +175,40 @@ class Goblin(Enemy):
         super().__init__(name,level,hp,maxHp)
     def makeMove(self):
         print(self.name, " goblin is moving")
+    def attack(self,target):
+        super().attack(target)
 class Witch(Enemy):
     def __init__(self,name,level,hp,maxHp):
         super().__init__(name,level,hp,maxHp)
     def makeMove(self):
         print(self.name, " witch is moving")
+    def attack(self,target):
+        super().attack(target)
 class Worm(Enemy):
     def __init__(self,name,level,hp,maxHp):
         super().__init__(name,level,hp,maxHp)
     def makeMove(self):
         print(self.name," worm is moving")
+    def attack(self,target):
+        super().attack(target)
 class Dragon(Enemy):
     def __init__(self,name,level,hp,maxHp):
         super().__init__(name,level,hp,maxHp)
     def makeMove(self):
         print(self.name," dragon is moving")
+    def attack(self,target):
+        super().attack(target)
 
 ############################################################################
 
 #POLIMORFIZM
 
 enemy = EntityFactory.createEnemy("worm","fiutek",5)
-#zwykły = Goblin("Gienek", 1, 20, 20)
-boss = Goblin.createBoss("boss",7)
-print(boss.hp)
+hero = EntityFactory.createHero("warrior","warrior",5)
+print(hero)
+hero.attack(enemy)
+print(enemy)
+
+
 print(enemy)
 print(enemy.maxHp)
