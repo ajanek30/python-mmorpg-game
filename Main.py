@@ -51,9 +51,10 @@ class Entity(ABC):
             target.takeDamage(damage) #poprawic to wszedzie
 
     def takeDamage(self,amount):
-        self._hp -= amount
+        self._hp = max(0,self._hp - amount)
         print(f" ⚔️ {self.name} otrzymuje {amount} obrażeń! (Pozostało HP: {max(0, self._hp):.1f})")
         self.lifeChecker()
+
 
     def lifeChecker(self):
         if not self.isAlive:
@@ -136,13 +137,19 @@ class InventoryMixin:
         self.inventory = []
     def addItem(self,item):
         self.inventory.append(item)
-        print(item, " added to inventory")
+        print(item, "added to inventory!")
+        self.showInventory()
     def dropItem(self,item):
-        self.inventory.remove(item)
-        print(item, " removed from inventory")
+        if item in self.inventory:
+            self.inventory.remove(item)
+            print(item, " removed from inventory!")
+        self.showInventory()
     def showInventory(self):
-        for item in self.inventory:
-            print(item)
+        if not self.inventory:
+            print(f"🎒 {self.name}'s inventory: is empty!")
+        else:
+            for item in self.inventory:
+                print(f"🎒 {self.name}'s inventory: {item}")
 #bohater
 
 class Hero(Entity,HealingMixin,InventoryMixin):
@@ -278,28 +285,39 @@ class Dragon(Enemy):
 
 #POLIMORFIZM
 
-#musi byc obsluga gry z podzialem na tury
-
-enemy = EntityFactory.createEnemy("worm","fiutek",2)
+enemy = EntityFactory.createEnemy("worm","fiutek",8)
 hero = EntityFactory.createHero("warrior","warrior",1)
 
+def gameHandle(entity1,entity2):
+    entity1.addItem("mieczyk")
+    entity1.dropItem("mie6czyk")
+
+    entity2.addItem("kosa")
+    entity2.receiveHealing(10)
+    Goblin.createBoss(entity1.name,entity1.level)
+
+    fightHandle(entity1,entity2)
 
 def fightHandle(entity1,entity2):
 
     while entity1 and entity2:
+        print("====================================================================================")
+        print(f"🗡️🗡️🗡️🗡️🗡️🗡️🗡️🗡️🗡️🗡️{entity1}🗡️🗡️🗡️🗡️🗡️🗡️🗡️🗡️🗡️🗡️")
+        print("====================================================================================")
         entity1.makeMove()
         entity1.attack(entity2)
 
         if not entity2:
             break
-
+        print("====================================================================================")
+        print(f"🗡️🗡️🗡️🗡️🗡️🗡️🗡️🗡️🗡️🗡️{entity2}🗡️🗡️🗡️🗡️🗡️🗡️🗡️🗡️🗡️🗡️")
+        print("====================================================================================")
+        time.sleep(3)
         entity2.makeMove()
         entity2.attack(entity1)
-        time.sleep(1)
-
+        time.sleep(3)
         if not entity1:
             break
 
 
-
-fightHandle(enemy,hero)
+gameHandle(enemy,hero)
