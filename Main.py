@@ -1,3 +1,5 @@
+import time
+
 import numpy as np
 from abc import ABC, abstractmethod
 
@@ -50,10 +52,12 @@ class Entity(ABC):
 
     def takeDamage(self,amount):
         self._hp -= amount
+        print(f" ⚔️ {self.name} otrzymuje {amount} obrażeń! (Pozostało HP: {max(0, self._hp):.1f})")
         self.lifeChecker()
 
     def lifeChecker(self):
         if not self.isAlive:
+            print(f" 💀 {self.name} umiera!")
             self._hp = 0
 
     def isMissed(self,bonus = 0):
@@ -61,8 +65,9 @@ class Entity(ABC):
         return np.random.randint(0,101) < currentChance
 
     def missAttack(self):
-            pass #to implement - todo #missing whatever it means
-
+        print(f" 💨 {self.name} pudłuje!")
+            #pass #to implement - todo #missing whatever it means
+            #change turn
 #METODY SPECJALNE
     def __str__(self):
         return f"[{self.__class__.__name__} Lvl {self.level}] {self.name} | HP: {self._hp}/{self.maxHp}"
@@ -135,7 +140,9 @@ class InventoryMixin:
     def dropItem(self,item):
         self.inventory.remove(item)
         print(item, " removed from inventory")
-
+    def showInventory(self):
+        for item in self.inventory:
+            print(item)
 #bohater
 
 class Hero(Entity,HealingMixin,InventoryMixin):
@@ -144,7 +151,7 @@ class Hero(Entity,HealingMixin,InventoryMixin):
         self.initInventory()
     def __str__(self):
         return super().__str__()
-    def makeMoving(self):
+    def makeMove(self):
         pass
 
 #bohaterowie dziedziczni
@@ -154,14 +161,14 @@ class Warrior(Hero):
         super().__init__(name,level,150,150,20)
         self.stamina = 100
     def makeMove(self):
-        print(self.name, " warrior is moving")
+        print(super().__str__(), ": is moving")
     def attack(self,target):
         if self.isMissed(bonus = 5):
             self.missAttack()
         else:
             if self.stamina >= 20:
                 self.stamina -= 20
-                damage = self.level * 1.5 + self.stamina * 1.3
+                damage = self.level * 1.5 + self.stamina * 0.3
                 target.takeDamage(damage)
             else:
                 super().attack(target)
@@ -173,7 +180,7 @@ class Knight(Hero):
         return np.random.randint(10,30)
 
     def makeMove(self):
-        print(self.name, " warrior is moving")
+        print(super().__str__(), ": is moving")
     def attack(self,target):
         if self.isMissed(bonus = 1):
             self.missAttack()
@@ -189,11 +196,12 @@ class Mage(Hero):
         super().__init__(name,level,90,90,15)
         self.mana = 150
     def makeMove(self):
-        print(self.name, " mage is moving")
+        print(super().__str__(), ": is moving")
 
     def attack(self,target):
         if self.isMissed(bonus = 1):
             self.missAttack()
+        else:
             if self.mana >= 35:
                 self.mana -= 35
                 damage = self.level * 1.5 + self.mana * 1.5
@@ -225,7 +233,7 @@ class Goblin(Enemy):
     def __init__(self,name,level,hp,maxHp,missChance):
         super().__init__(name,level,hp,maxHp,missChance)
     def makeMove(self):
-        print(self.name, " goblin is moving")
+        print(super().__str__(), ": is moving")
     def attack(self,target):
         if self.isMissed(bonus = 1):
             self.missAttack()
@@ -236,7 +244,7 @@ class Witch(Enemy):
     def __init__(self,name,level,hp,maxHp,missChance):
         super().__init__(name,level,hp,maxHp,missChance)
     def makeMove(self):
-        print(self.name, " witch is moving")
+        print(super().__str__(), ": is moving")
     def attack(self,target):
         if self.isMissed(bonus = 1):
             self.missAttack()
@@ -247,7 +255,7 @@ class Worm(Enemy):
     def __init__(self,name,level,hp,maxHp,missChance):
         super().__init__(name,level,hp,maxHp,missChance)
     def makeMove(self):
-        print(self.name," worm is moving")
+        print(super().__str__(), ": is moving")
     def attack(self,target):
         if self.isMissed(bonus=1):
             self.missAttack()
@@ -258,7 +266,7 @@ class Dragon(Enemy):
     def __init__(self,name,level,hp,maxHp,missChance):
         super().__init__(name,level,hp,maxHp,missChance)
     def makeMove(self):
-        print(self.name," dragon is moving")
+        print(super().__str__(), ": is moving")
     def attack(self,target):
         if self.isMissed(bonus=1):
             self.missAttack()
@@ -270,12 +278,28 @@ class Dragon(Enemy):
 
 #POLIMORFIZM
 
-enemy = EntityFactory.createEnemy("worm","fiutek",5)
-hero = EntityFactory.createHero("warrior","warrior",5)
-print(hero)
-hero.attack(enemy)
-print(enemy)
+#musi byc obsluga gry z podzialem na tury
+
+enemy = EntityFactory.createEnemy("worm","fiutek",2)
+hero = EntityFactory.createHero("warrior","warrior",1)
 
 
-print(enemy)
-print(enemy.maxHp)
+def fightHandle(entity1,entity2):
+
+    while entity1 and entity2:
+        entity1.makeMove()
+        entity1.attack(entity2)
+
+        if not entity2:
+            break
+
+        entity2.makeMove()
+        entity2.attack(entity1)
+        time.sleep(1)
+
+        if not entity1:
+            break
+
+
+
+fightHandle(enemy,hero)
