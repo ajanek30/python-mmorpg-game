@@ -148,18 +148,16 @@ class InventoryMixin:
     def addItem(self,item):
         self.inventory.append(item)
         print(item, "added to inventory!")
-        self.showInventory()
     def dropItem(self,item):
         if item in self.inventory:
             self.inventory.remove(item)
             print(item, " removed from inventory!")
-        self.showInventory()
-    def showInventory(self):
-        if not self.inventory:
-            print(f"🎒 {self.name}'s inventory: is empty!")
-        else:
-            for item in self.inventory:
-                print(f"🎒 {self.name}'s inventory: {item}")
+    #def showInventory(self):
+        #if not self.inventory:
+            #print(f"🎒 {self.name}'s inventory: is empty!")
+        #else:
+            #for item in self.inventory:
+                #print(f"🎒 {self.name}'s inventory: {item}")
 #itemy
 
 class Weapon(Item):
@@ -167,7 +165,6 @@ class Weapon(Item):
         super().__init__(name,description)
         self.damageBonus = damageBonus
     def use(self,target):
-        print(f"🗡️ {target.name} chwyta za broń: {self.name}! (+{self.damageBonus} do ataku)")
         target.equipWeapon(self)
 class Potion(Item):
     def __init__(self,name,description,healAmount):
@@ -190,7 +187,7 @@ class Hero(Entity,HealingMixin,InventoryMixin):
             print(f"🔄 {self.name} chowa {self.equippedWeapon.name} do plecaka.")
             self.addItem(self.equippedWeapon)
         self.equippedWeapon = newWeapon
-        print(f"🗡️ {self.name} chwyta za broń: {newWeapon.name}! (+{newWeapon.damageBonus} do ataku)")
+        #print(f"🗡️ {self.name} chwyta za broń: {newWeapon.name}! (+{newWeapon.damageBonus} do ataku)")
         if newWeapon in self.inventory:
             self.inventory.remove(newWeapon)
 
@@ -211,12 +208,14 @@ class Warrior(Hero):
         if self.isMissed(bonus = 5):
             self.missAttack()
         else:
+            weaponBonus = self.equippedWeapon.damageBonus if self.equippedWeapon else 0
             if self.stamina >= 20:
                 self.stamina -= 20
-                damage = self.level * 1.5 + self.stamina * 0.3
+                damage = self.level * 1.5 + self.stamina * 0.3 + weaponBonus
                 target.takeDamage(damage)
             else:
-                super().attack(target)
+                damage = self.level * 1.5 + weaponBonus
+                target.takeDamage(damage)
 
 class Knight(Hero):
     def __init__(self,name,level):
@@ -230,12 +229,14 @@ class Knight(Hero):
         if self.isMissed(bonus = 1):
             self.missAttack()
         else:
+            weaponBonus = self.equippedWeapon.damageBonus if self.equippedWeapon else 0
             bonusDamage = self.generateKnightBonus()
             if(bonusDamage > 15):
-                damage = self.level * 1.5 + bonusDamage
+                damage = self.level * 1.5 + bonusDamage + weaponBonus
                 target.takeDamage(damage)
             else:
-                super().attack(target)
+                damage = self.level * 1.5 + weaponBonus
+                target.takeDamage(damage)
 class Mage(Hero):
     def __init__(self,name,level):
         super().__init__(name,level,90,90,15)
@@ -247,12 +248,14 @@ class Mage(Hero):
         if self.isMissed(bonus = 1):
             self.missAttack()
         else:
+            weaponBonus = self.equippedWeapon.damageBonus if self.equippedWeapon else 0
             if self.mana >= 35:
                 self.mana -= 35
-                damage = self.level * 1.5 + self.mana * 1.5
+                damage = self.level * 1.5 + self.mana * 1.5 + weaponBonus
                 target.takeDamage(damage)
             else:
-                super().attack(target)
+                damage = self.level * 1.5 + weaponBonus
+                target.takeDamage(damage)
 #wrog
 
 class Enemy(Entity,InventoryMixin,HealingMixin):
@@ -326,6 +329,7 @@ class Dragon(Enemy):
 enemy = EntityFactory.createEnemy("worm", "fiutek", 8)
 player = EntityFactory.createHero("warrior", "warrior", 1)
 miecz = Weapon("Stalowy Miecz", "Zwykły miecz z pobliskiej kuźni", damageBonus=10)
+rozdzka = Weapon("Magiczna różdżka","różdżka wykuta przez niebiosa", damageBonus=20)
 mikstura = Potion("Mała Mikstura Życia", "Leczy 30 HP", healAmount=30)
 
 def gameHandle(player,enemy):
@@ -342,12 +346,12 @@ def fightHandle(player,enemy):
 
 #jakos oni musza miec iles potek itd czy moga sie leczyc w nieskonczonosc???
     while player and enemy:
+        aktualnaBron = player.equippedWeapon if player.equippedWeapon else "Puste pięści"
         print(f"\n[Twoja tura] {player.name} HP: {player.hp:.1f}/{player.maxHp} | {enemy.name} HP: {enemy.hp:.1f}/{enemy.maxHp}")
         print("Co chcesz zrobić?\n")
-        print(f"[1] Atak ⚔️ | twoja broń : {miecz.__str__()}")#todo
-        print("[2] Wybierz broń 🎒")
-        print("[3] Ulecz się♂️")
-        print("[4] Ucieczka🏃‍♂️")
+        print(f"[1] Atak ⚔️ | twoja broń : {aktualnaBron}")
+        print("[2] Wybierz przedmiot/ekwipunek 🎒")
+        print("[3] Ucieczka🏃‍♂️")
 
         mainChoice = input("Wybierz akcję (1/2/3/4): ")
         print("-" * 20)
@@ -357,14 +361,32 @@ def fightHandle(player,enemy):
             player.attack(enemy)
 
         elif mainChoice == "2":
-            miecz.use(player)
-            player.addItem("mieczyk")#todo
-            #dodac dodawania do inventory
+            if not player.inventory:
+                print("utrata tury!")
+                pass
+            else:
+                print("zawartosc plecaka")
+                for idx,item in enumerate(player.inventory,start = 1):
+                    print(f"[{idx}] {item}")
+                print("[0] Anuluj (powrót)")
+                try:
+                    choice = int(input("Podaj numer przedmiotu"))
+                    if choice == 0:
+                        print("anulowano,tracisz ture!")
+                        pass
+                    elif 1 <= choice <= len(player.inventory):
+                        selectemItem = player.inventory[choice-1]
+                        selectemItem.use(player)
+
+                        if(isinstance(selectemItem,Potion)):
+                            player.dropItem(selectemItem)
+                            print("mikstura zostala usunieta")
+                    else:
+                        print("Nie ma takiego przedmiotu!")
+                except ValueError:
+                    print("musisz wpisac cyfre")
+
         elif mainChoice == "3":
-            mikstura.use(player)
-            print(f" 🏃‍♂️ {player.name} Uleczył się!")
-            break
-        elif mainChoice == "4":
             print(f" 🏃‍♂️ {player.name} ucieka w popłochu z pola walki!")
             break
         else:
