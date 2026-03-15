@@ -1,6 +1,5 @@
 import random
 import time
-import os
 
 import numpy as np
 from abc import ABC, abstractmethod
@@ -50,7 +49,7 @@ class Entity(ABC):
             return
         else:
             damage = self.level * 1.5
-            target.takeDamage(damage) #poprawic to wszedzie
+            target.takeDamage(damage)
 
     def takeDamage(self,amount):
         self._hp = max(0,self._hp - amount)
@@ -69,8 +68,7 @@ class Entity(ABC):
 
     def missAttack(self):
         print(f" 💨 {self.name} pudłuje!")
-            #pass #to implement - todo #missing whatever it means
-            #change turn
+
 #METODY SPECJALNE
     def __str__(self):
         return f"[{self.__class__.__name__} Lvl {self.level}] {self.name} | HP: {self._hp}/{self.maxHp}"
@@ -141,7 +139,7 @@ class EntityFactory:
 class HealingMixin:
     def receiveHealing(self,amount):
         oldHp = self._hp
-        self._hp = min(oldHp + amount, self.maxHp) # zeby nie przekroczyc maxa
+        self._hp = min(oldHp + amount, self.maxHp)
         healed = self._hp - oldHp
         print("Healed",healed)
 
@@ -359,24 +357,28 @@ enemy1 = EntityFactory.createEnemy("worm", "fiutek", 8)
 enemy2 = EntityFactory.createEnemy("witch", "frajer", 8)
 player = EntityFactory.createHero("warrior", "warrior", 10)
 miecz = Weapon("Stalowy Miecz", "Zwykły miecz z pobliskiej kuźni", damageBonus=10)
+bron = Weapon("Diamentowy Miecz", "Miecz z diaxow", damageBonus=20)
 rozdzka = Weapon("Magiczna różdżka","różdżka wykuta przez niebiosa", damageBonus=20)
 mikstura = Potion("Mała Mikstura Życia", "Leczy 30 HP", healAmount=30)
 
 def gameHandle(player):
 
+################################
     player.addItem(miecz)
     player.addItem(mikstura)
-
-    Goblin.createBoss(player.name,player.level)
+    player.addItem(rozdzka)
+    player.addItem(bron)
+    goblinBoss = Goblin.createBoss(player.name,player.level)
+################################
 
     fightHandle(player,enemy1)
-    print(f"Następny przeciwnik!\n ##################################")
+    print(f"Następny przeciwnik!"
+          f"\n ##################################")
+    fightHandle(player,goblinBoss)
     fightHandle(player,enemy2)
-    #i tu kolejny przeciwnik itd
 
 def fightHandle(player,enemy):
 
-#jakos oni musza miec iles potek itd czy moga sie leczyc w nieskonczonosc???
     while player and enemy:
         aktualnaBron = player.equippedWeapon if player.equippedWeapon else "Puste pięści"
         print(f"\n[Twoja tura] {player.name} HP: {player.hp:.1f}/{player.maxHp} Level: {player.level}({player.xp}/{player.xpToLevelUp})"
@@ -392,6 +394,7 @@ def fightHandle(player,enemy):
         if mainChoice == "1":
             player.makeMove()
             player.attack(enemy)
+            break
 
         elif mainChoice == "2":
             if not player.inventory:
@@ -413,7 +416,6 @@ def fightHandle(player,enemy):
 
                         if(isinstance(selectemItem,Potion)):
                             player.dropItem(selectemItem)
-                            print("mikstura zostala usunieta")
                     else:
                         print("Nie ma takiego przedmiotu!")
                 except ValueError:
@@ -421,27 +423,25 @@ def fightHandle(player,enemy):
 
         elif mainChoice == "3":
             print(f" 🏃‍♂️ {player.name} ucieka w popłochu z pola walki!")
-            break
+            return
         else:
-            print("nieznana opcja")
+            print("nieznana opcja, spróbuj ponownie w następnej turze!")
         if not enemy:
             print(f"{enemy} zostal pokonany")
             player.gainXp(enemy.xp)
-
             break;
 
         time.sleep(1)
 
         #zmiana tury
 
-
         if not player:
-            print(f"{player} zostal pokonany")
+            print(f"{player} zostal pokonany!")
             player.xpTransfer(player)
             break
+
         enemy.makeMove()
         enemy.attack(player)
-
         time.sleep(1)
 
 

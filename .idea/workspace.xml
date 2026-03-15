@@ -86,7 +86,7 @@
       <workItem from="1773404734880" duration="3012000" />
       <workItem from="1773408986881" duration="5819000" />
       <workItem from="1773414863181" duration="3042000" />
-      <workItem from="1773570752363" duration="4058000" />
+      <workItem from="1773570752363" duration="5916000" />
     </task>
     <servers />
   </component>
@@ -105,7 +105,7 @@
     </option>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/JPWP$Main.coverage" NAME="Main Coverage Results" MODIFIED="1773573795604" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/JPWP$Main.coverage" NAME="Main Coverage Results" MODIFIED="1773577870646" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/JPWP$Classes.coverage" NAME="Classes Coverage Results" MODIFIED="1773573434576" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/.venv" />
   </component>
 </project>
