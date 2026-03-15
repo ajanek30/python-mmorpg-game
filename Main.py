@@ -188,7 +188,12 @@ class Hero(Entity,HealingMixin,InventoryMixin):
     @property
     def xpToLevelUp(self):
         return self._xpToLevelUp
-
+    @xp.setter
+    def xp(self,amount):
+        self._xp = amount
+    @xpToLevelUp.setter
+    def xpToLevelUp(self,amount):
+        self._xpToLevelUp = amount
     def equipWeapon(self, newWeapon):
         if self.equippedWeapon is not None:
             print(f"🔄 {self.name} chowa {self.equippedWeapon.name} do plecaka.")
@@ -196,10 +201,21 @@ class Hero(Entity,HealingMixin,InventoryMixin):
         self.equippedWeapon = newWeapon
         if newWeapon in self.inventory:
             self.inventory.remove(newWeapon)
-    def levelUp(self):
-        #todo
+    def gainXp(self,amount):
+        self._xp += amount
+        print(f"✨ {self.name} zyskuje {amount} XP! ({self._xp}/{self._xpToLevelUp})")
+        if self.xp > self._xpToLevelUp:
+            self.levelUp()
 
+    def levelUp(self):
         self.level += 1
+        self.xp -= self.xpToLevelUp
+        self.xpToLevelUp = round(self.xpToLevelUp*1.5)
+        self.maxHp += 20
+        self.hp = self.maxHp
+        print(f"🎊 AWANS! {self.name} osiągnął poziom {self.level}!")
+        print(f"❤️ Max HP wzrosło do {self.maxHp}!")
+
     def __str__(self):
         return super().__str__()
     def makeMove(self):
@@ -341,7 +357,7 @@ class Dragon(Enemy):
 
 enemy1 = EntityFactory.createEnemy("worm", "fiutek", 8)
 enemy2 = EntityFactory.createEnemy("witch", "frajer", 8)
-player = EntityFactory.createHero("warrior", "warrior", 1)
+player = EntityFactory.createHero("warrior", "warrior", 10)
 miecz = Weapon("Stalowy Miecz", "Zwykły miecz z pobliskiej kuźni", damageBonus=10)
 rozdzka = Weapon("Magiczna różdżka","różdżka wykuta przez niebiosa", damageBonus=20)
 mikstura = Potion("Mała Mikstura Życia", "Leczy 30 HP", healAmount=30)
@@ -410,6 +426,7 @@ def fightHandle(player,enemy):
             print("nieznana opcja")
         if not enemy:
             print(f"{enemy} zostal pokonany")
+            player.gainXp(enemy.xp)
 
             break;
 
@@ -420,6 +437,7 @@ def fightHandle(player,enemy):
 
         if not player:
             print(f"{player} zostal pokonany")
+            player.xpTransfer(player)
             break
         enemy.makeMove()
         enemy.attack(player)
