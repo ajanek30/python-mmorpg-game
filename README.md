@@ -3,6 +3,7 @@ MMORPG game implementing advanced aspects of multi inheritance
 and classes
 
 #todo!
+no i do tego musi byc w grze opcja ze kolejny przeciwnik jest
 3. System Doświadczenia (XP) i Awansowania
 Zabicie wroga kończy grę. A co, gdybyśmy chcieli zabić ich pięciu z rzędu?
 

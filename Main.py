@@ -1,3 +1,4 @@
+import random
 import time
 import os
 
@@ -120,6 +121,8 @@ class EntityFactory:
         enemyType = enemyType.lower()
         maxHp = level * 20
         hp = np.random.randint(int(0.2 * maxHp), maxHp + 1)
+        xp = round(int(0.5 * maxHp))
+
         missChance = 20
         enemies = \
             {
@@ -152,12 +155,7 @@ class InventoryMixin:
         if item in self.inventory:
             self.inventory.remove(item)
             print(item, " removed from inventory!")
-    #def showInventory(self):
-        #if not self.inventory:
-            #print(f"🎒 {self.name}'s inventory: is empty!")
-        #else:
-            #for item in self.inventory:
-                #print(f"🎒 {self.name}'s inventory: {item}")
+
 #itemy
 
 class Weapon(Item):
@@ -177,20 +175,31 @@ class Potion(Item):
 #bohater
 
 class Hero(Entity,HealingMixin,InventoryMixin):
-    def __init__(self,name,level,hp,maxHp,missChance,equippedWeapon=None):
+    def __init__(self,name,level,hp,maxHp,missChance,xp = 0,xpToLevelUp = 100,equippedWeapon=None):
         super().__init__(name,level,hp,maxHp,missChance)
         self.initInventory()
         self.equippedWeapon = equippedWeapon
+        self._xp = xp
+        self._xpToLevelUp = xpToLevelUp
+
+    @property
+    def xp(self):
+        return self._xp
+    @property
+    def xpToLevelUp(self):
+        return self._xpToLevelUp
 
     def equipWeapon(self, newWeapon):
         if self.equippedWeapon is not None:
             print(f"🔄 {self.name} chowa {self.equippedWeapon.name} do plecaka.")
             self.addItem(self.equippedWeapon)
         self.equippedWeapon = newWeapon
-        #print(f"🗡️ {self.name} chwyta za broń: {newWeapon.name}! (+{newWeapon.damageBonus} do ataku)")
         if newWeapon in self.inventory:
             self.inventory.remove(newWeapon)
+    def levelUp(self):
+        #todo
 
+        self.level += 1
     def __str__(self):
         return super().__str__()
     def makeMove(self):
@@ -261,7 +270,11 @@ class Mage(Hero):
 class Enemy(Entity,InventoryMixin,HealingMixin):
     def __init__(self,name,level,hp,maxHp,missChance):
         super().__init__(name,level,hp,maxHp,missChance)
+        self._xp = round(self.maxHp * random.random())
         self.initInventory()
+    @property
+    def xp(self):
+        return self._xp
     #METODA KLASOWA
     @classmethod
     def createBoss(cls, name, level):
@@ -326,28 +339,32 @@ class Dragon(Enemy):
 
 #POLIMORFIZM
 
-enemy = EntityFactory.createEnemy("worm", "fiutek", 8)
+enemy1 = EntityFactory.createEnemy("worm", "fiutek", 8)
+enemy2 = EntityFactory.createEnemy("witch", "frajer", 8)
 player = EntityFactory.createHero("warrior", "warrior", 1)
 miecz = Weapon("Stalowy Miecz", "Zwykły miecz z pobliskiej kuźni", damageBonus=10)
 rozdzka = Weapon("Magiczna różdżka","różdżka wykuta przez niebiosa", damageBonus=20)
 mikstura = Potion("Mała Mikstura Życia", "Leczy 30 HP", healAmount=30)
 
-def gameHandle(player,enemy):
+def gameHandle(player):
 
     player.addItem(miecz)
     player.addItem(mikstura)
 
-    enemy.receiveHealing(10)
     Goblin.createBoss(player.name,player.level)
 
-    fightHandle(player,enemy)
+    fightHandle(player,enemy1)
+    print(f"Następny przeciwnik!\n ##################################")
+    fightHandle(player,enemy2)
+    #i tu kolejny przeciwnik itd
 
 def fightHandle(player,enemy):
 
 #jakos oni musza miec iles potek itd czy moga sie leczyc w nieskonczonosc???
     while player and enemy:
         aktualnaBron = player.equippedWeapon if player.equippedWeapon else "Puste pięści"
-        print(f"\n[Twoja tura] {player.name} HP: {player.hp:.1f}/{player.maxHp} | {enemy.name} HP: {enemy.hp:.1f}/{enemy.maxHp}")
+        print(f"\n[Twoja tura] {player.name} HP: {player.hp:.1f}/{player.maxHp} Level: {player.level}({player.xp}/{player.xpToLevelUp})"
+              f" | {enemy.name} HP: {enemy.hp:.1f}/{enemy.maxHp} Level: {enemy.level}({enemy.xp})")
         print("Co chcesz zrobić?\n")
         print(f"[1] Atak ⚔️ | twoja broń : {aktualnaBron}")
         print("[2] Wybierz przedmiot/ekwipunek 🎒")
@@ -393,6 +410,7 @@ def fightHandle(player,enemy):
             print("nieznana opcja")
         if not enemy:
             print(f"{enemy} zostal pokonany")
+
             break;
 
         time.sleep(1)
@@ -409,4 +427,4 @@ def fightHandle(player,enemy):
         time.sleep(1)
 
 
-gameHandle(player,enemy)
+gameHandle(player)
