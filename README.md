@@ -3,15 +3,6 @@ MMORPG game implementing advanced aspects of multi inheritance
 and classes
 
 #todo!
-no i do tego musi byc w grze opcja ze kolejny przeciwnik jest
-3. System Doświadczenia (XP) i Awansowania
-Zabicie wroga kończy grę. A co, gdybyśmy chcieli zabić ich pięciu z rzędu?
-
-Co dodać: Atrybut _xp i _xpToNextLevel w klasie Hero. Po śmierci potwora (w lifeChecker), wróg przekazuje swoje punkty XP bohaterowi.
-
-Jak to zmieni grę: Jeśli wojownik zbierze 100 XP, wywoła się metoda levelUp(), która podniesie jego .level o 1, w pełni zregeneruje jego HP i powiększy .maxHp.
-
-Czego to uczy: Tworzenia powiązań między zdarzeniami (śmierć obiektu A wywołuje zmianę w obiekcie B) i skalowania trudności (matematyka w kodzie).
 
 4. Zapisywanie i Wczytywanie Stanu Gry (Bazy Danych / Pliki)
 Prawdziwe aplikacje nie tracą danych po wyłączeniu konsoli.
