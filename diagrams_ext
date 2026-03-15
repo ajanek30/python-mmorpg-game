@@ -1,0 +1,127 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+title Szczegółowy Diagram Klas - RPG Engine
+
+abstract class Entity {
+    + name: string
+    + level: int
+    # _hp: float
+    # _maxHp: float
+    # _missChance: int
+    -- Properties --
+    + hp: float <<get/set>>
+    + maxHp: float <<get/set>>
+    + missChance: int <<get/set>>
+    + isAlive: bool <<get>>
+    -- Methods --
+    {abstract} + makeMove()
+    + attack(target: Entity)
+    + takeDamage(amount: float)
+    + lifeChecker()
+    + isMissed(bonus: int): bool
+    + missAttack()
+    -- Special --
+    + __str__()
+    + __lt__(other): bool
+    + __bool__(): bool
+}
+
+abstract class Item {
+    + name: string
+    + description: string
+    {abstract} + use(target: Entity)
+}
+
+class Weapon {
+    + damageBonus: int
+    + use(target: Entity)
+}
+
+class Potion {
+    + healAmount: int
+    + use(target: Entity)
+}
+
+interface HealingMixin {
+    + receiveHealing(amount: float)
+}
+
+interface InventoryMixin {
+    + inventory: List<Item>
+    + initInventory()
+    + addItem(item: Item)
+    + dropItem(item: Item)
+}
+
+class Hero {
+    - _xp: int
+    - _xpToLevelUp: int
+    + equippedWeapon: Weapon
+    -- Properties --
+    + xp: int <<get/set>>
+    + xpToLevelUp: int <<get/set>>
+    -- Methods --
+    + equipWeapon(newWeapon: Weapon)
+    + gainXp(amount: int)
+    + levelUp()
+}
+
+class Enemy {
+    - _xp: int
+    {static} + createBoss(name, level): Enemy
+}
+
+class EntityFactory << (S,#FF7700) Static >> {
+    {static} + createHero(heroType, name, level): Hero
+    {static} + createEnemy(enemyType, name, level): Enemy
+}
+
+' Konkretne implementacje bohaterów
+class Warrior {
+    + stamina: int
+    + attack(target: Entity)
+}
+class Knight {
+    + generateKnightBonus(): int
+    + attack(target: Entity)
+}
+class Mage {
+    + mana: int
+    + attack(target: Entity)
+}
+
+' Konkretne implementacje wrogów
+class Goblin {}
+class Witch {}
+class Worm {}
+class Dragon {}
+
+' Relacje dziedziczenia i implementacji
+Entity <|-- Hero
+Entity <|-- Enemy
+Item <|-- Weapon
+Item <|-- Potion
+
+Hero ..|> HealingMixin
+Hero ..|> InventoryMixin
+Enemy ..|> HealingMixin
+Enemy ..|> InventoryMixin
+
+Hero <|-- Warrior
+Hero <|-- Knight
+Hero <|-- Mage
+
+Enemy <|-- Goblin
+Enemy <|-- Witch
+Enemy <|-- Worm
+Enemy <|-- Dragon
+
+' Relacje posiadania
+Hero "1" *-- "0..*" Item : inventory
+Hero "1" o-- "0..1" Weapon : equippedWeapon
+EntityFactory ..> Hero : creates
+EntityFactory ..> Enemy : creates
+
+@endum
+@enduml

@@ -388,13 +388,16 @@ def fightHandle(player,enemy):
         print("[2] Wybierz przedmiot/ekwipunek 🎒")
         print("[3] Ucieczka🏃‍♂️")
 
-        mainChoice = input("Wybierz akcję (1/2/3/4): ")
+        mainChoice = input("Wybierz akcję (1/2/3): ")
         print("-" * 20)
 
         if mainChoice == "1":
             player.makeMove()
             player.attack(enemy)
-            break
+            if not enemy:
+                player.gainXp(enemy.xp)
+                break
+
 
         elif mainChoice == "2":
             if not player.inventory:
@@ -436,8 +439,7 @@ def fightHandle(player,enemy):
         #zmiana tury
 
         if not player:
-            print(f"{player} zostal pokonany!")
-            player.xpTransfer(player)
+            print("💀 Poległeś w walce...")
             break
 
         enemy.makeMove()
