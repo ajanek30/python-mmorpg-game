@@ -6,12 +6,35 @@ from abc import ABC, abstractmethod
 
 #KLASA ABSTRAKCYJNA
 
+class validatedData():
+    def __init__(self, minValue = 0):
+        self.minValue = minValue
+        self.name = None
+    def __setname__(self, owner, name):
+        self.name = name
+    def __get__(self, instance, owner):
+        if instance is None:
+            return self
+        return instance.__dict__.get(self.name, 0)
+
+    def __set__(self, instance, value):
+        if value < self.minValue:
+            value = self.minValue
+        if self.name == "hp" and hasattr(instance, "maxHp"):
+            if value > instance.maxHp:
+                value = instance.maxHp
+        instance.__dict__[self.name] = value
+
+
 class Entity(ABC):
+    __slots__ = ('name', 'level', '_hp', '_maxHp', '_missChance')
+    hp = validatedData(0)
+    maxHp = validatedData(0)
     def __init__(self, name,level,hp,maxHp,missChance):
         self.name = name
         self.level = level
-        self._hp = hp
-        self._maxHp = maxHp
+        self.hp = hp
+        self.maxHp = maxHp
         self._missChance = missChance
     @property
     def hp(self):
@@ -87,6 +110,7 @@ class Entity(ABC):
         return self.isAlive
 
 class Item(ABC):
+    __slots__ = ('name','description')
     def __init__(self,name,description):
         self.name = name
         self.description = description
@@ -137,6 +161,7 @@ class EntityFactory:
 #MIXINY
 
 class HealingMixin:
+    __slots__= ()
     def receiveHealing(self,amount):
         oldHp = self._hp
         self._hp = min(oldHp + amount, self.maxHp)
@@ -144,6 +169,7 @@ class HealingMixin:
         print("Healed",healed)
 
 class InventoryMixin:
+    __slots__=()
     def initInventory(self):
         self.inventory = []
     def addItem(self,item):
@@ -157,12 +183,14 @@ class InventoryMixin:
 #itemy
 
 class Weapon(Item):
+    __slots__=('description','damageBonus')
     def __init__(self,name,description,damageBonus):
         super().__init__(name,description)
         self.damageBonus = damageBonus
     def use(self,target):
         target.equipWeapon(self)
 class Potion(Item):
+    __slots__ = ('healAmount',)
     def __init__(self,name,description,healAmount):
         super().__init__(name,description)
         self.healAmount = healAmount
@@ -173,6 +201,7 @@ class Potion(Item):
 #bohater
 
 class Hero(Entity,HealingMixin,InventoryMixin):
+    __slots__ = ('inventory', '_xp', '_xpToLevelUp', 'equippedWeapon')
     def __init__(self,name,level,hp,maxHp,missChance,xp = 0,xpToLevelUp = 100,equippedWeapon=None):
         super().__init__(name,level,hp,maxHp,missChance)
         self.initInventory()
@@ -222,6 +251,7 @@ class Hero(Entity,HealingMixin,InventoryMixin):
 #bohaterowie dziedziczni
 
 class Warrior(Hero):
+    __slots = ('stamina',)
     def __init__(self,name,level):
         super().__init__(name,level,150,150,20)
         self.stamina = 100
@@ -241,6 +271,7 @@ class Warrior(Hero):
                 target.takeDamage(damage)
 
 class Knight(Hero):
+    __slots__ = ()
     def __init__(self,name,level):
         super().__init__(name,level,120,120,30)
     def generateKnightBonus(self):
@@ -261,6 +292,7 @@ class Knight(Hero):
                 damage = self.level * 1.5 + weaponBonus
                 target.takeDamage(damage)
 class Mage(Hero):
+    __slots__ = ('mana',)
     def __init__(self,name,level):
         super().__init__(name,level,90,90,15)
         self.mana = 150
@@ -282,6 +314,7 @@ class Mage(Hero):
 #wrog
 
 class Enemy(Entity,InventoryMixin,HealingMixin):
+    __slots__ = ('_xp','inventory')
     def __init__(self,name,level,hp,maxHp,missChance):
         super().__init__(name,level,hp,maxHp,missChance)
         self._xp = round(self.maxHp * random.random())
@@ -305,6 +338,7 @@ class Enemy(Entity,InventoryMixin,HealingMixin):
 #wrogowie dziedziczni
 
 class Goblin(Enemy):
+    __slots__ = ()
     def __init__(self,name,level,hp,maxHp,missChance):
         super().__init__(name,level,hp,maxHp,missChance)
     def makeMove(self):
@@ -316,6 +350,7 @@ class Goblin(Enemy):
             super().attack(target)
 
 class Witch(Enemy):
+    __slots__ = ()
     def __init__(self,name,level,hp,maxHp,missChance):
         super().__init__(name,level,hp,maxHp,missChance)
     def makeMove(self):
@@ -327,6 +362,7 @@ class Witch(Enemy):
             super().attack(target)
 
 class Worm(Enemy):
+    __slots__ = ()
     def __init__(self,name,level,hp,maxHp,missChance):
         super().__init__(name,level,hp,maxHp,missChance)
     def makeMove(self):
@@ -338,6 +374,7 @@ class Worm(Enemy):
             super().attack(target)
 
 class Dragon(Enemy):
+    __slots__ = ()
     def __init__(self,name,level,hp,maxHp,missChance):
         super().__init__(name,level,hp,maxHp,missChance)
     def makeMove(self):
