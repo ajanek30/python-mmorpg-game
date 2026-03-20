@@ -1,5 +1,6 @@
 import random
 import time
+from pympler import asizeof
 
 import numpy as np
 from abc import ABC, abstractmethod
@@ -314,7 +315,7 @@ class Mage(Hero):
 #wrog
 
 class Enemy(Entity,InventoryMixin,HealingMixin):
-    __slots__ = ('_xp','inventory')
+    __slots__ = ('_xp','inventory') #sprawdzacz slots/dict memory usage
     def __init__(self,name,level,hp,maxHp,missChance):
         super().__init__(name,level,hp,maxHp,missChance)
         self._xp = round(self.maxHp * random.random())
@@ -398,6 +399,24 @@ bron = Weapon("Diamentowy Miecz", "Miecz z diaxow", damageBonus=20)
 rozdzka = Weapon("Magiczna różdżka","różdżka wykuta przez niebiosa", damageBonus=20)
 mikstura = Potion("Mała Mikstura Życia", "Leczy 30 HP", healAmount=30)
 
+####################
+#TESTY
+
+print(f"MRO dla klasy Hero:")
+for cls in Hero.mro():
+    print(f" -> {cls.__name__}") #mozna porownac z diagramem diagrams
+print("\n\n\n\n")
+
+#zeby sprawdzic przechodzisz do klasy Enemy
+#zakomentuj __slots__ aby sprawdzic memory usage dict
+#i odwrotnie
+
+#many_slots = [Enemy("Worm", 10,100,200,10) for _ in range(1000)]
+many_dicts = [Enemy("Worm", 10,100,200,10) for _ in range(1000)]
+
+#print(f"Pamięć 1000 obiektów ze SLOTS: {asizeof.asizeof(many_slots)} bajtów")
+print(f"Pamięć 1000 obiektów z DICT:  {asizeof.asizeof(many_dicts)} bajtów")
+##########################################################################
 def gameHandle(player):
 
 ################################
@@ -482,6 +501,7 @@ def fightHandle(player,enemy):
         enemy.makeMove()
         enemy.attack(player)
         time.sleep(1)
+
 
 
 gameHandle(player)
