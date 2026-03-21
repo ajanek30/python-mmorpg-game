@@ -4,47 +4,50 @@
 top to bottom direction
 skinparam linetype ortho
 
-class node7 as "Main.Dragon"
-class node5 as "Main.Enemy"
-class node1 as "Main.Entity"
-class node9 as "Main.EntityFactory"
-class node11 as "Main.Goblin"
-class node16 as "Main.HealingMixin"
-class node12 as "Main.Hero"
-class node6 as "Main.InventoryMixin"
-class node4 as "Main.Item"
-class node8 as "Main.Knight"
-class node17 as "Main.Mage"
-class node0 as "Main.Potion"
-class node18 as "Main.Warrior"
-class node2 as "Main.Weapon"
-class node3 as "Main.Witch"
+class node6 as "Main.Dragon"
+class node16 as "Main.Enemy"
+class node7 as "Main.Entity"
+class node17 as "Main.EntityFactory"
+class node10 as "Main.Goblin"
+class node1 as "Main.HealingMixin"
+class node15 as "Main.Hero"
+class node0 as "Main.InventoryMixin"
+class node11 as "Main.Item"
+class node19 as "Main.Knight"
+class node9 as "Main.Mage"
+class node12 as "Main.Potion"
+class node2 as "Main.Warrior"
+class node8 as "Main.Weapon"
+class node18 as "Main.Witch"
 class node13 as "Main.Worm"
-class node10 as "abc.ABC"
-class node15 as "abc.ABCMeta"
+class node14 as "Main.validatedData"
+class node3 as "abc.ABC"
+class node4 as "abc.ABCMeta"
 class object
-class node14 as "typing.Hashable"
+class node20 as "typing.Hashable"
 
-node7   ^-[#595959,plain]-  node5  
-node5   ^-[#595959,plain]-  node1  
-node5   ^-[#595959,plain]-  node16 
-node5   ^-[#595959,plain]-  node6  
-node1   ^-[#595959,plain]-  node10 
-node9   ^-[#595959,plain]-  object 
-node11  ^-[#595959,plain]-  node5  
-node16  ^-[#595959,plain]-  object 
-node12  ^-[#595959,plain]-  node1  
-node12  ^-[#595959,plain]-  node16 
-node12  ^-[#595959,plain]-  node6  
-node6   ^-[#595959,plain]-  object 
-node4   ^-[#595959,plain]-  node10 
-node8   ^-[#595959,plain]-  node12 
-node17  ^-[#595959,plain]-  node12 
-node0   ^-[#595959,plain]-  node4  
-node18  ^-[#595959,plain]-  node12 
-node2   ^-[#595959,plain]-  node4  
-node3   ^-[#595959,plain]-  node5  
-node13  ^-[#595959,plain]-  node5  
-node10  ^-[#595959,plain]-  object 
-object  ^-[#595959,dashed]-  node14 
+node6   ^-[#595959,plain]-  node16 
+node16  ^-[#595959,plain]-  node7  
+node16  ^-[#595959,plain]-  node1  
+node16  ^-[#595959,plain]-  node0  
+node7   ^-[#595959,plain]-  node3  
+node17  ^-[#595959,plain]-  object 
+node10  ^-[#595959,plain]-  node16 
+node1   ^-[#595959,plain]-  object 
+node15  ^-[#595959,plain]-  node7  
+node15  ^-[#595959,plain]-  node1  
+node15  ^-[#595959,plain]-  node0  
+node0   ^-[#595959,plain]-  object 
+node11  ^-[#595959,plain]-  node3  
+node19  ^-[#595959,plain]-  node15 
+node9   ^-[#595959,plain]-  node15 
+node12  ^-[#595959,plain]-  node11 
+node2   ^-[#595959,plain]-  node15 
+node8   ^-[#595959,plain]-  node11 
+node18  ^-[#595959,plain]-  node16 
+node13  ^-[#595959,plain]-  node16 
+node14  ^-[#595959,plain]-  object 
+node3   <-[#595959,dashed]- "isinstanceof" node4  
+node3   ^-[#595959,plain]-  object 
+object  ^-[#595959,dashed]-  node20 
 @enduml

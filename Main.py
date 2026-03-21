@@ -391,8 +391,8 @@ class Dragon(Enemy):
 
 #POLIMORFIZM
 
-enemy1 = EntityFactory.createEnemy("worm", "fiutek", 8)
-enemy2 = EntityFactory.createEnemy("witch", "frajer", 8)
+enemy1 = EntityFactory.createEnemy("worm", "franek", 8)
+enemy2 = EntityFactory.createEnemy("witch", "piotrek", 8)
 player = EntityFactory.createHero("warrior", "warrior", 10)
 miecz = Weapon("Stalowy Miecz", "Zwykły miecz z pobliskiej kuźni", damageBonus=10)
 bron = Weapon("Diamentowy Miecz", "Miecz z diaxow", damageBonus=20)
