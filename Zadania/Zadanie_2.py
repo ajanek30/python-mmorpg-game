@@ -1,13 +1,20 @@
 # Wędrując przez Labirynt Abstrakcji, natrafiasz na lśniącą podstawkę.
 # Spoczywa na niej legendarny "Dzbanuszek Modulacji AM".
 # Tuż obok wisi w powietrzu ciężka, niematerialna "5 z SiSU".
-# Aby móc go zabrać, musisz stworzyć uniwersalną "Domieszkę" (Mixin),
-# która pozwoli każdemu przedmiotowi stać się "podnoszalnym".
+# Twoim zadaniem będzie zabranie obu przedmiotów.
+
+# Aby móc zabrać dzbanuszek, musisz nauczyć się podnosić materialne przedmioty
+# W tym celu uzupełnij klasę Lootable(Mixin), która definiuje metodą pick_up
 # Pamiętaj: Mixin nie powinien definiować własnego stanu (__init__),
 # ma jedynie dostarczać nową umiejętność!
 
+#5 z SiSu jest niematerialna, musisz podnieść ją bez udziału LootableMixin()
+
+
+
 class LootableMixin:
-    def pick_up(...):
+    ...
+    def pickUpBy(...):
         print(f"{player_name} podnosi przedmiot!")
 
 
@@ -25,5 +32,5 @@ relic ...
 print(f"Gratulacje! Zdobyłeś: {relic.name}")
 
 
-grade.pick_up(...) #Kod powinien wyrzucić błąd
+grade.pickUpBy(...) #Kod powinien wyrzucić błąd
 #Nie oszukujmy się nawet w grach nie wszystko jest możliwe 
