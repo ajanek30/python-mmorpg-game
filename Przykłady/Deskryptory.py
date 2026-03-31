@@ -1,6 +1,6 @@
 class Wallet:
     def __init__(self, balance):
-        self._balance = balance
+        self.balance = balance
 
     @property
     def balance(self):
@@ -14,6 +14,6 @@ class Wallet:
 
 
 account = Wallet(-5)
-account.balance = 50
+#account.balance = 50
 print(account.balance)
 
